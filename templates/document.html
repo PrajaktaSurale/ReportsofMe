@@ -99,13 +99,13 @@
 </style>
 {{template "spinner"}}
 <div class="card">
-  <!-- Email Filter Dropdown -->
+  <!-- Patient Dropdown -->
   <div class="row g-2 align-items-center">
     <div class="col-auto">
-      <br /><label for="toFilter" class="floating-label"
+      <br /><label for="patientSelect" class="floating-label"
         >Select Patient :</label
       >
-      <select id="toFilter" style="width: 200px">
+      <select id="patientSelect" style="width: 200px">
         <option value="">Select Patient</option>
         {{range .UniqueRecipients}}
         <option value="{{.}}">{{.}}</option>
@@ -114,10 +114,23 @@
       <br /><br />
     </div>
   </div>
-
-  <!-- Email Table -->
+  <div id="accessStatus" style="margin-bottom: 10px; font-weight: bold"></div>
+  <br />
+  <div
+    id="showingAllRecordsText"
+    style="
+      display: none;
+      color: gray;
+      font-weight: bold;
+      margin-top: 10px;
+      margin-left: 20px;
+    "
+  >
+    Showing All Records
+  </div>
+  <!--Prescription Table -->
   <center>
-    <table class="table table-bordered">
+    <table class="table table-bordered border-dark">
       <thead>
         <tr>
           <th
@@ -158,7 +171,7 @@
           </th>
         </tr>
       </thead>
-      <tbody id="emailTableBody">
+      <tbody id="prescriptionTable">
         <tr class="no-records-row">
           <td colspan="4" style="text-align: center; color: gray">
             No Record Found
@@ -209,7 +222,9 @@
     <div id="popup-content"></div>
   </div>
   <br /><br />
+
   <div class="row g-2 align-items-center">
+    <!-- BACK BUTTON-->
     <div class="col-auto">
       <a
         href="javascript:void(0);"
@@ -250,133 +265,150 @@
             </div>
 
             <div class="modal-body">
-              <!-- Mobile Number Input -->
-
-              <input
-                type="text"
-                id="nameInput"
-                class="form-control"
-                placeholder="Name"
+              <div
+                class="form-floating mb-3"
                 style="display: none"
-                autocomplete="off"
-              />
-              <br />
+                id="nameInputWrapper"
+              >
+                <input
+                  type="text"
+                  id="nameInput"
+                  class="form-control"
+                  placeholder="Enter Name"
+                  autocomplete="off"
+                />
 
-              <input
-                type="text"
-                id="mobileInput"
-                class="form-control"
-                placeholder="Enter 10 Digit Mobile"
-                maxlength="10"
-                onkeypress="checkEnter(event)"
-                autocomplete="off"
-              />
+                <label for="nameInput">Full Name</label>
+              </div>
+              <!-- Mobile Number Input -->
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="mobileInput"
+                  placeholder="Enter 10 Digit Mobile"
+                  maxlength="10"
+                  onkeypress="checkEnter(event)"
+                  autocomplete="off"
+                />
+                <label for="mobileInput">Mobile Number</label>
+              </div>
 
               <!-- OTP Input (Initially Hidden) -->
-              <input
-                type="text"
+              <div
+                class="form-floating mt-3"
+                style="display: none"
                 id="otpInput"
-                class="form-control mt-3"
-                placeholder="Enter OTP"
-                style="display: none"
-                maxlength="6"
-                autocomplete="off"
-              />
-              <br />
-
-              <input
-                type="email"
-                id="emailInput"
-                class="form-control"
-                style="display: none"
-                placeholder="Email"
-                autocomplete="off"
-              />
-              <br />
-
-              <input
-                type="date"
-                id="dobInput"
-                class="form-control"
-                style="display: none"
-                placeholder="DOB"
-                autocomplete="off"
-              />
-              <br />
-
-              <input
-                type="text"
-                id="genderInput"
-                class="form-control"
-                style="display: none"
-                placeholder="Gender"
-                autocomplete="off"
-              />
-              <br />
-
-              <label>
+              >
                 <input
-                  type="checkbox"
-                  name="checkbox_name"
-                  value="checkbox_value"
-                  id="chkbox"
+                  type="text"
+                  id="addPatientOtpInput"
+                  class="form-control"
+                  placeholder="Enter Sent OTP"
+                  maxlength="6"
+                  autocomplete="off"
                 />
-                Allow View All Records
-              </label>
-              <!-- Name Input (Initially Hidden) -->
-              <!-- Patient Details Input - shown after OTP success -->
-              <!-- Patient Details Input - shown after successful OTP -->
-              <!-- <input type="text" id="afterOtpInput" placeholder="Enter Patient Name" class="form-control mt-3" style="display: none;" /> -->
+                <label for="addPatientOtpInput">Enter Sent OTP</label>
+              </div>
 
-              <input
-                type="text"
-                id="nameInput"
-                placeholder="Enter Name"
-                class="form-control mt-3"
+              <!-- Patient Details Input - shown after OTP success -->
+              <!-- Email -->
+              <div
+                class="form-floating mb-3"
                 style="display: none"
-              />
-              <input
-                type="tel"
-                id="mobileInput"
-                placeholder="Mobile Number"
-                class="form-control mt-3"
+                id="emailInputWrapper"
+              >
+                <input
+                  type="email"
+                  id="emailInput"
+                  class="form-control"
+                  placeholder="Email"
+                  autocomplete="off"
+                />
+                <label for="emailInput">Email</label>
+              </div>
+              <!-- DOB -->
+              <div
+                class="form-floating mb-3"
                 style="display: none"
-              />
-              <input
-                type="email"
-                id="emailInput"
-                placeholder="Email"
-                class="form-control mt-3"
+                id="dobInputWrapper"
+              >
+                <input
+                  type="date"
+                  id="dobInput"
+                  class="form-control"
+                  placeholder="Date of Birth"
+                  autocomplete="off"
+                />
+                <label for="dobInput">Date of Birth</label>
+              </div>
+
+              <!-- Gender -->
+              <div
+                class="form-floating mb-3"
                 style="display: none"
-              />
-              <input
-                type="date"
-                id="dobInput"
-                placeholder="DOB"
-                class="form-control mt-3"
+                id="genderInputWrapper"
+              >
+                <input
+                  type="text"
+                  id="genderInput"
+                  class="form-control"
+                  placeholder="Gender"
+                  autocomplete="off"
+                />
+                <label for="genderInput">Gender</label>
+              </div>
+              <!-- 👇 Gender Radio Buttons for New Patients -->
+              <div class="mb-3" style="display: none" id="genderRadioWrapper">
+                <label class="form-label">Gender</label><br />
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="genderRadio"
+                    id="maleRadio"
+                    value="Male"
+                  />
+                  <label class="form-check-label" for="maleRadio">Male</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="genderRadio"
+                    id="femaleRadio"
+                    value="Female"
+                  />
+                  <label class="form-check-label" for="femaleRadio"
+                    >Female</label
+                  >
+                </div>
+              </div>
+
+              <div
+                id="chkboxWrapper"
+                class="form-check mt-3"
                 style="display: none"
-              />
-              <input
-                type="text"
-                id="dobInput"
-                placeholder="Gender"
-                class="form-control mt-3"
-                style="display: none"
-              />
-              <label style="display: none" id="chkbox"
-                ><input type="checkbox" class="form-control mt-3"
-              /></label>
+              >
+                <input type="checkbox" id="chkbox" class="form-check-input" />
+                <label for="chkbox" class="form-check-label ms-2"
+                  >Allow View All Records</label
+                >
+              </div>
+
+              <!-- Save Button -->
               <button
+                onclick="savePatientData()"
                 id="savePatientButton"
-                type="button"
-                class="btn btn-default mt-3"
+                class="btn btn-secondary mt-3"
                 style="
                   display: none;
-                  background-color: rgba(154, 154, 154, 0.18);
+                  width: 100%;
+                  margin: 25px auto 3%;
+                  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.3);
                 "
-                disabled
               >
-                Save Patient
+                ADD PATIENT
               </button>
 
               <!-- NEXT / Submit Button -->
@@ -399,6 +431,7 @@
       </div>
     </div>
 
+    <!--  OPD BUTTON-->
     <div class="col-auto">
       <a
         href="javascript:void(0);"
@@ -414,6 +447,7 @@
         tabindex="-1"
         aria-hidden="true"
       >
+        <!--  OPD MODAL ERROR-->
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-body text-center">
@@ -441,6 +475,7 @@
         </div>
       </div>
 
+      <!--  OPD MODAL-->
       <div
         class="modal fade"
         id="opdModal"
@@ -453,7 +488,7 @@
             <div class="modal-header">
               <h5 class="modal-title" id="opdModalLabel">OPD</h5>
               <span
-                id="patientMobile"
+                id="patientselect"
                 style="font-size: 1.25rem; color: #212529; margin-left: 10px"
               ></span>
               <button
@@ -463,6 +498,7 @@
                 aria-label="Close"
               ></button>
             </div>
+
             <div class="modal-body">
               <ul class="nav nav-tabs" id="opdTabs" role="tablist">
                 <li class="nav-item">
@@ -505,6 +541,7 @@
               <div class="tab-content" id="opdTabsContent">
                 <div class="tab-pane fade show active" id="notes">
                   <textarea
+                    id="notesInput"
                     class="form-control"
                     placeholder="Add OPD Notes"
                     rows="5"
@@ -512,6 +549,7 @@
                 </div>
                 <div class="tab-pane fade" id="prescription">
                   <textarea
+                    id="prescriptionInput"
                     class="form-control"
                     placeholder="Add Prescription"
                     rows="5"
@@ -550,6 +588,16 @@
                 </div>
               </div>
             </div>
+            <!-- Bootstrap Icon Alert with Custom Message -->
+            <div
+              id="warningAlert"
+              class="alert alert-danger d-flex align-items-center d-none mx-3 mt-3"
+              role="alert"
+            >
+              <div id="warningMessage">
+                <!-- Dynamic message will be injected here -->
+              </div>
+            </div>
             <div class="modal-footer">
               <button
                 type="button"
@@ -586,56 +634,17 @@
           </div>
         </div>
       </div>
-
-      <!-- New Warning Modal -->
-      <div
-        class="modal fade"
-        id="warningModal"
-        tabindex="-1"
-        aria-labelledby="warningModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div
-              class="modal-header"
-              style="color: #ffffff; background-color: #4caf50"
-            >
-              <h5 class="modal-title" id="warningModalLabel">Error</h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-              ></button>
-            </div>
-            <div class="modal-body fw-bold" id="warningMessage">
-              <!-- Warning message will be inserted here dynamically -->
-            </div>
-            <div class="modal-footer">
-              <button
-                type="submit"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-                style="
-                  color: #4caf50;
-                  background-color: rgba(154, 154, 154, 0.36);
-                "
-              >
-                OK
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
+
+    <!-- View All Records  -->
     <div class="col-auto">
       <!-- View All Records Button -->
-      <!-- View All Records Button -->
+
       <a href="javascript:void(0);" id="viewRecordsBtn" class="btn btn-default">
         VIEW ALL RECORDS
       </a>
 
-      <!-- Main All Record Modal -->
+      <!-- View All Record Modal -->
       <div
         class="modal fade"
         id="allrecordModal"
@@ -668,14 +677,21 @@
               />
 
               <!-- OTP Field -->
-              <input
-                type="text"
-                id="OTPInput"
-                class="form-control mt-3"
-                placeholder="Enter OTP"
-                maxlength="6"
+              <div
+                class="form-floating mt-3"
+                id="viewAllOtpWrapper"
                 style="display: none"
-              />
+              >
+                <input
+                  type="text"
+                  id="viewAllOtpInput"
+                  class="form-control"
+                  placeholder="Enter Sent OTP"
+                  maxlength="6"
+                  autocomplete="off"
+                />
+                <label for="viewAllOtpInput">Enter Sent OTP</label>
+              </div>
 
               <!-- Button -->
               <button
@@ -769,22 +785,303 @@
       </div>
     </div>
   </div>
+
   <br /><br /><br />
 </div>
+
 <script>
-  // ✅ Handles "Next" click in Add Patient modal
+  
+  window.addEventListener("DOMContentLoaded", function () {
+    const dropdown = document.getElementById("patientSelect");
+    const modalTitle = document.getElementById("opdModalLabel");
+
+    const restorePatient = localStorage.getItem("restorePatient") === "true";
+    const savedPatient = localStorage.getItem("selectedPatient");
+
+    populatePatientDropdown().then(() => {
+      if (restorePatient && savedPatient) {
+        dropdown.value = savedPatient;
+        dropdown.dispatchEvent(new Event("change"));
+      }
+      localStorage.removeItem("restorePatient");
+      localStorage.removeItem("selectedPatient");
+    });
+
+    dropdown.addEventListener("change", () => {
+      const mobileNumber = dropdown.value?.split("@")[0];
+      if (mobileNumber) modalTitle.textContent = `OPD - ${mobileNumber}`;
+    });
+
+    document.querySelectorAll('a[rev="opd-link"]').forEach((opdBtn) => {
+      opdBtn.addEventListener("click", () => {
+        if (!dropdown.value) {
+          document.getElementById("opdMessageText").textContent =
+            "Please select a patient to proceed further.";
+          new bootstrap.Modal(
+            document.getElementById("opdMessageModal")
+          ).show();
+          return;
+        }
+
+        const mobile = dropdown.value.split("@")[0];
+        modalTitle.textContent = `OPD - ${mobile}`;
+        new bootstrap.Modal(document.getElementById("opdModal")).show();
+      });
+    });
+  });
+ 
+  async function populatePatientDropdown() {
+    const dropdown = document.getElementById("patientSelect");
+    dropdown.innerHTML = '<option value="">Loading patients...</option>';
+  
+    try {
+      const response = await fetch("/get-recipients");
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+  
+      const data = await response.json();
+      dropdown.innerHTML = '<option value="">Select Patient</option>'; // Clear after fetch
+  
+      const uniqueMobiles = new Set();
+  
+      data.forEach(({ mobile, name }) => {
+        const trimmedMobile = mobile?.trim();
+        const displayName = name?.trim() || trimmedMobile;
+  
+        if (trimmedMobile && !uniqueMobiles.has(trimmedMobile)) {
+          uniqueMobiles.add(trimmedMobile);
+          const option = document.createElement("option");
+  
+          // Now just store mobile, no domain
+          option.value = trimmedMobile;
+          option.textContent = displayName;
+  
+          dropdown.appendChild(option);
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching patient list:", error);
+      dropdown.innerHTML = '<option value="">Failed to load patients</option>';
+    }
+  }
+  
+  function checkAccessAndRefresh() {
+    const selectedPatientId = document.getElementById("patientSelect").value;
+    const doctorId = loggedInEmail;
+    const statusMessage = document.getElementById("accessStatus");
+
+    if (!selectedPatientId) {
+      statusMessage.innerText = "";
+      document.getElementById("prescriptionTable").innerHTML = `
+        <tr><td colspan="4" style="text-align:center; color: gray;">No Record Found</td></tr>`;
+      return;
+    }
+
+    fetch(
+      `/check-access?doctorId=${encodeURIComponent(
+        doctorId
+      )}&patientId=${encodeURIComponent(selectedPatientId)}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const access = data.hasAccess;
+        const showingText = document.getElementById("showingAllRecordsText");
+        const viewBtn = document.getElementById("viewRecordsBtn");
+
+        if (access === "Y") {
+          statusMessage.innerHTML = `<span style="color: green;">✅ Data Access Granted</span>`;
+          showingText.style.display = "block";
+          viewBtn.style.display = "none";
+        } else {
+          const msg =
+            access === "N" ? "❌ Access Not Granted" : "❌ No Record Found";
+          statusMessage.innerHTML = `<span style="color: red;">${msg}</span>`;
+          showingText.style.display = "none";
+          viewBtn.style.display = "block";
+        }
+
+        filterPrescriptionTable();
+      })
+      .catch((err) => {
+        console.error("❌ Error checking access:", err);
+        statusMessage.innerHTML = `<span style="color: red;">❌ Error checking access</span>`;
+        filterPrescriptionTable();
+      });
+  }
+
+  document
+    .getElementById("patientSelect")
+    .addEventListener("change", checkAccessAndRefresh);
+
+  function filterPrescriptionTable() {
+    const selectedTo = document.getElementById("patientSelect").value;
+    const tableBody = document.getElementById("prescriptionTable");
+
+    if (!selectedTo) {
+      tableBody.innerHTML = `
+        <tr><td colspan="4" style="text-align:center; color: gray;">No Record Found</td></tr>`;
+      return;
+    }
+
+    showSpinner();
+
+    fetch(`/emails?to=${encodeURIComponent(selectedTo)}`, {
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+    })
+      .then((response) => {
+        if (response.redirected) {
+          alert("Session expired. Redirecting to login.");
+          window.location.href = "/login";
+          return Promise.reject("Redirected due to expired session.");
+        }
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const emails = data.emails || [];
+        const html = emails
+          .map((email) => {
+            const fromName = email.from_name || "Unknown";
+            const subject = email.subject || "(No Subject)";
+            const date = email.date || "No Date";
+            const attachments =
+              (email.attachment_names || [])
+                .map(
+                  (name) =>
+                    `<a href="javascript:void(0);" onclick="renderAttachments(${email.uid}, '${name}')" style="color: red; text-decoration: none;">${name}</a>`
+                )
+                .join(", ") || "No Attachments";
+
+            return `
+            <tr>
+              <td>${fromName}</td>
+              <td>
+                <a href="javascript:void(0);" onclick="fetchAndShowEmailBody('${email.uid}')"
+                  style="color: red; text-decoration: none;">${subject}</a>
+              </td>
+              <td>${date}</td>
+              <td>${attachments}</td>
+            </tr>`;
+          })
+          .join("");
+
+        tableBody.innerHTML =
+          html ||
+          `
+          <tr><td colspan="4" style="text-align: center; color: gray;">No Record Found</td></tr>`;
+        hideSpinner();
+      })
+      .catch((err) => {
+        console.error("❌ Fetch error:", err);
+        tableBody.innerHTML = `
+          <tr><td colspan="4" style="color: red; text-align: center;">Error loading emails.</td></tr>`;
+        hideSpinner();
+      });
+  }
+  const addPatientModal = document.getElementById("addptModal");
+
+  addPatientModal.addEventListener("show.bs.modal", () => {
+    // Reset input values
+    document.getElementById("mobileInput").value = "";
+    document.getElementById("addPatientOtpInput").value = "";
+    document.getElementById("nameInput").value = "";
+    document.getElementById("emailInput").value = "";
+    document.getElementById("dobInput").value = "";
+    document.getElementById("genderInput").value = "";
+    document.getElementById("chkbox").checked = false;
+    document.getElementById("chkbox").disabled = false;
+  
+    // Hide all form sections except mobile + Next button
+    [
+      "otpInput",
+      "nameInputWrapper",
+      "emailInputWrapper",
+      "dobInputWrapper",
+      "genderInputWrapper",
+      "genderRadioWrapper",
+      "chkboxWrapper",
+      "savePatientButton",
+    ].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = "none";
+    });
+  
+    // Show only Next button
+    document.getElementById("nextButton").style.display = "block";
+  });
+  
+  // Function to save patient data
+  function savePatientData() {
+    const name = document.getElementById("nameInput").value.trim();
+    const email = document.getElementById("emailInput").value.trim();
+    const dob = document.getElementById("dobInput").value.trim();
+    const gender =
+      document.getElementById("genderInputWrapper").style.display === "block"
+        ? document.getElementById("genderInput").value.trim()
+        : document.querySelector("input[name='genderRadio']:checked")?.value;
+    const mobile = document.getElementById("mobileInput").value.trim();
+    const doctorId = loggedInEmail?.trim(); // assuming loggedInEmail is globally defined
+    const hasAccess = document.getElementById("chkbox").checked ? "Y" : "N";
+  
+    // Validate required fields
+    if (!name || !dob || !gender || !mobile || !doctorId) {
+      alert("❌ Please fill all the required fields.");
+      return;
+    }
+  
+    const payload = {
+      name,
+      email,
+      dob,
+      gender,
+      mobile,
+      doctorId,
+      hasAccess,
+    };
+  
+    console.log("📤 Submitting patient data:", payload);
+    showSpinner();
+    fetch("/save-patient", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("✅ Save response:", data);
+        if (data.success) {
+          console.log("🎉 Patient saved successfully!");
+          const addPatientModalEl = document.getElementById("addptModal");
+          let addPatientModal = bootstrap.Modal.getInstance(addPatientModalEl);
+          if (!addPatientModal) {
+            addPatientModal = new bootstrap.Modal(addPatientModalEl);
+          }
+          addPatientModal.hide();
+          hideSpinner();
+          location.reload();
+        } else {
+          alert("⚠️ Failed to save patient: " + (data.message || "Unknown error."));
+          hideSpinner();
+        }
+      })
+      .catch((err) => {
+        console.error("❌ Error saving patient:", err);
+        alert("⚠️ Something went wrong. Try again.");
+      });
+  }
   function handleNextClick() {
     const mobileInput = document.getElementById("mobileInput");
     const otpInput = document.getElementById("otpInput");
     const nextButton = document.getElementById("nextButton");
-
+  
     const mobileNumber = mobileInput.value.trim();
-
+  
     if (!/^\d{10}$/.test(mobileNumber)) {
       alert("❌ Please enter a valid 10-digit mobile number");
       return;
     }
-
+  
     // Generate OTP
     fetch("/generate-otp-card", {
       method: "POST",
@@ -799,7 +1096,11 @@
           otpInput.style.display = "block";
           mobileInput.setAttribute("readonly", true);
           nextButton.textContent = "Submit";
-          nextButton.onclick = submitAddPatientOtp;
+  
+          // Set onclick using an anonymous function to pass the event
+          nextButton.onclick = function (event) {
+            submitOtpAddPatient(event);
+          };
         } else {
           alert("❌ Failed to generate OTP");
         }
@@ -809,202 +1110,181 @@
         alert("⚠️ Could not generate OTP. Try again.");
       });
   }
-
+  
+  // Submit OTP for Add Patient modal
   function submitOtpAddPatient(event) {
-    if (event) event.preventDefault(); // ✅ Prevent form submission / page reload
-
-    const mobile = document.getElementById("mobileInput").value.trim();
-    const otp = document.getElementById("otpInput").value.trim();
-
-    if (!otp) {
-      const otpErrorModal = new bootstrap.Modal(
-        document.getElementById("otpErrorModal")
-      );
-      document.getElementById("otpErrorText").textContent =
-        "❌ Please enter the OTP.";
+    // Prevent any form submission that might trigger a page refresh
+    event.preventDefault();
+  
+    console.log("🔍 submitOtpAddPatient triggered");
+  
+    const mobile = document.getElementById("mobileInput")?.value.trim();
+    const otp = document.getElementById("addPatientOtpInput")?.value.trim();
+    const doctorId = loggedInEmail?.trim();
+  
+    console.log("📤 Collected Values →", { mobile, otp, doctorId });
+  
+    // Check if required fields are filled
+    if (!mobile || !otp || !doctorId) {
+      const otpErrorModal = new bootstrap.Modal(document.getElementById("otpErrorModal"));
+      document.getElementById("otpErrorText").textContent = "❌ Missing required fields.";
       otpErrorModal.show();
       return;
     }
-
+  
+    // Initiate OTP verification
     fetch("/verify-otp-card", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ mobile, otp }),
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("OTP Verify Response:", data);
-
-        if (data.success) {
-          // ✅ Show success modal
-          const successModal = new bootstrap.Modal(
-            document.getElementById("otpSuccessModal")
-          );
-          document.getElementById("otpSuccessText").textContent =
-            "✅ OTP verified successfully!";
-          //successModal.show();
-
-          // ✅ Show new input & Save button (disabled)
-          document.getElementById("otpInput").style.display = "none";
-          document.getElementById("nextButton").style.display = "none";
-
-          /*document.getElementById("afterOtpInput").style.display = "block";
-        document.getElementById("emailInput").style.display = "block";
-        document.getElementById("dobInput").style.display = "block";
-        document.getElementById("genderInput").style.display = "block";
-        document.getElementById("chkbox").style.display = "block";*/
-
-          const saveBtn = document.getElementById("savePatientButton");
-          saveBtn.style.display = "block";
-          saveBtn.disabled = true; // 👈 keep it disabled for now
+        console.log("📥 OTP Verification Response:", data);
+  
+        const isOtpSuccess = data.success === true || data.success === "true";
+  
+        if (isOtpSuccess) {
+          console.log("✅ OTP Verified. Now checking MongoDB...");
+  
+          // Hide OTP input and next button
+          ["otpInput", "nextButton"].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = "none";
+          });
+  
+          // Show post-OTP fields
+          [
+            "afterOtpInput",
+            "nameInputWrapper",
+            "emailInputWrapper",
+            "dobInputWrapper",
+            "genderInputWrapper",
+            "chkboxWrapper",
+            "savePatientButton",
+          ].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = "block";
+          });
+  
+          document.getElementById("savePatientButton").disabled = false;
+  
+          // Call MongoDB check
+          checkPatientInMongo(mobile, doctorId);
         } else {
-          // ❌ Invalid OTP
-          const errorModal = new bootstrap.Modal(
-            document.getElementById("otpErrorModal")
-          );
-          document.getElementById("otpErrorText").textContent =
-            "❌ " + (data.error || "Invalid OTP.");
+          console.warn("❌ OTP Verification Failed.");
+          const errorModal = new bootstrap.Modal(document.getElementById("otpErrorModal"));
+          document.getElementById("otpErrorText").textContent = "❌ " + (data.error || "Invalid OTP.");
           errorModal.show();
         }
       })
       .catch((err) => {
-        console.error("OTP Verification Error:", err);
-        const errorModal = new bootstrap.Modal(
-          document.getElementById("otpErrorModal")
-        );
-        document.getElementById("otpErrorText").textContent =
-          "⚠️ Something went wrong. Try again.";
+        console.error("❌ OTP Verification Error (Network or Server):", err);
+        const errorModal = new bootstrap.Modal(document.getElementById("otpErrorModal"));
+        document.getElementById("otpErrorText").textContent = "⚠️ Something went wrong. Try again.";
         errorModal.show();
       });
   }
-
-  // ✅ Optional: Clear fields when modal closes
+  
+  // Optional: Clear fields when modal closes
   document
     .getElementById("addptModal")
     .addEventListener("hidden.bs.modal", () => {
-      document.getElementById("mobileInput").value = "";
-      document.getElementById("otpInput").value = "";
-      document.getElementById("otpInput").style.display = "none";
-      document.getElementById("afterOtpTextbox").style.display = "none";
+      // Reset form values
+      const mobileInput = document.getElementById("mobileInput");
+      const otpInput = document.getElementById("otpInput");
+      const afterOtpInput = document.getElementById("afterOtpInput");
       const nextBtn = document.getElementById("nextButton");
+  
+      mobileInput.value = "";
+      otpInput.value = "";
+      otpInput.style.display = "none";
+      mobileInput.removeAttribute("readonly");
+  
+      if (afterOtpInput) afterOtpInput.style.display = "none";
+  
+      // Reset Next Button
       nextBtn.textContent = "Next";
       nextBtn.style.display = "block";
       nextBtn.onclick = handleNextClick;
-      document.getElementById("mobileInput").removeAttribute("readonly");
     });
+    function checkPatientInMongo(mobile, doctorId) {
+    console.log(
+      `🔍 Checking MongoDB for patient with mobile: ${mobile} and doctorId: ${doctorId}`
+    );
+    const today = new Date().toISOString().split("T")[0];
 
-  // ✅ Handles "Next" click in Add Patient modal
-  function handleNextClick() {
-    const mobileInput = document.getElementById("mobileInput");
-    const otpInput = document.getElementById("otpInput");
-    const nextButton = document.getElementById("nextButton");
-
-    const mobileNumber = mobileInput.value.trim();
-
-    if (!/^\d{10}$/.test(mobileNumber)) {
-      alert("❌ Please enter a valid 10-digit mobile number");
-      return;
-    }
-
-    // Generate OTP
-    fetch("/generate-otp-card", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({ mobile: mobileNumber }),
-    })
+    fetch(
+      `/check-patient?mobile=${encodeURIComponent(
+        mobile
+      )}&doctorId=${encodeURIComponent(doctorId)}`
+    )
       .then((res) => res.json())
       .then((data) => {
-        if (data.success) {
-          otpInput.style.display = "block";
-          mobileInput.setAttribute("readonly", true);
-          nextButton.textContent = "Submit";
-          nextButton.onclick = submitOtpAddPatient; // ✅ Corrected function name
-        } else {
-          alert("❌ Failed to generate OTP");
-        }
-      })
-      .catch((err) => {
-        console.error("OTP generation failed:", err);
-        alert("⚠️ Could not generate OTP. Try again.");
-      });
-  }
+        const nameInput = document.getElementById("nameInput");
+        const emailInput = document.getElementById("emailInput");
+        const dobInput = document.getElementById("dobInput");
+        const genderInput = document.getElementById("genderInput");
+        const chkbox = document.getElementById("chkbox");
 
-  // ✅ Handles OTP submission and confirmation
-  function submitOtpAddPatient() {
-    const mobile = document.getElementById("mobileInput").value.trim();
-    const otp = document.getElementById("otpInput").value.trim();
+        const genderInputWrapper =
+          document.getElementById("genderInputWrapper");
+        const genderRadioWrapper =
+          document.getElementById("genderRadioWrapper");
+        dobInput.max = today;
+        if (data.exists) {
+          console.log("✅ Patient exists in DB:", data);
 
-    if (!otp) {
-      const otpErrorModal = new bootstrap.Modal(
-        document.getElementById("otpErrorModal")
-      );
-      document.getElementById("otpErrorText").textContent =
-        "❌ Please enter the OTP.";
-      otpErrorModal.show();
-      return;
-    }
+          // Autofill data
+          nameInput.value = data.name || "";
+          emailInput.value = data.email || "";
+          dobInput.value = data.dob || "";
+          genderInput.value = data.gender || "";
 
-    fetch("/verify-otp-card", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({ mobile, otp }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("OTP Verify Response:", data);
+          // Make inputs read-only
+          nameInput.readOnly = true;
+          emailInput.readOnly = true;
+          dobInput.readOnly = true;
+          genderInput.readOnly = true;
 
-        if (data.success) {
-          // ✅ Show OTP success modal (without closing add patient modal)
-          const successModal = new bootstrap.Modal(
-            document.getElementById("otpSuccessModal")
-          );
-          document.getElementById("otpSuccessText").textContent =
-            "✅ OTP verified successfully!";
-          //successModal.show();
+          // Show text input, hide radio buttons
+          genderInputWrapper.style.display = "block";
+          genderRadioWrapper.style.display = "none";
 
-          // ✅ Hide OTP input and Next button
-          document.getElementById("otpInput").style.display = "none";
-          document.getElementById("nextButton").style.display = "none";
-          /*document.getElementById("emailInput").style.display = "none";
-        document.getElementById("dobInput").style.display = "none";
-        document.getElementById("genderInput").style.display = "none";
-        document.getElementById("chkbox").style.display = "none";*/
-
-          // ✅ Show input boxes
-          document.getElementById("nameInput").style.display = "block";
-          document.getElementById("emailInput").style.display = "block";
-          document.getElementById("dobInput").style.display = "block";
-          document.getElementById("genderInput").style.display = "block";
-          document.getElementById("chkbox").style.display = "block";
-
-          // ✅ Optionally show a save button
-          const saveBtn = document.getElementById("savePatientButton");
-          if (saveBtn) {
-            saveBtn.style.display = "block";
+          // ✅ Handle checkbox based on boolean access
+          if (data.hasAccess === true) {
+            chkbox.checked = true; // ✅ Mark as checked
+            chkbox.disabled = false; // ✏️ Keep editable
+          } else {
+            chkbox.checked = false;
+            chkbox.disabled = false;
           }
         } else {
-          const errorModal = new bootstrap.Modal(
-            document.getElementById("otpErrorModal")
-          );
-          document.getElementById("otpErrorText").textContent =
-            "❌ " + (data.error || "Invalid OTP.");
-          errorModal.show();
+          console.log("🆕 New patient. Preparing blank form...");
+
+          // Clear and enable all input fields
+          nameInput.value = "";
+          emailInput.value = "";
+          dobInput.value = "";
+          genderInput.value = "";
+          chkbox.checked = false;
+
+          nameInput.readOnly = false;
+          emailInput.readOnly = false;
+          dobInput.readOnly = false;
+
+          // Hide text input and show gender radio buttons
+          genderInputWrapper.style.display = "none";
+          genderRadioWrapper.style.display = "block";
+
+          document
+            .querySelectorAll("input[name='genderRadio']")
+            .forEach((r) => (r.checked = false));
+          chkbox.disabled = false;
         }
       })
       .catch((err) => {
-        console.error("OTP Verification Error:", err);
-        const errorModal = new bootstrap.Modal(
-          document.getElementById("otpErrorModal")
-        );
-        document.getElementById("otpErrorText").textContent =
-          "⚠️ Something went wrong. Try again.";
-        errorModal.show();
+        console.error("❌ Error while checking MongoDB:", err);
       });
   }
 
@@ -1014,7 +1294,7 @@
     .addEventListener("hidden.bs.modal", () => {
       const mobileInput = document.getElementById("mobileInput");
       const otpInput = document.getElementById("otpInput");
-      /*const afterOtpInput = document.getElementById("afterOtpInput");*/
+      const afterOtpInput = document.getElementById("afterOtpInput");
       const nextBtn = document.getElementById("nextButton");
 
       mobileInput.value = "";
@@ -1022,18 +1302,30 @@
       otpInput.style.display = "none";
       mobileInput.removeAttribute("readonly");
 
-      /*if (afterOtpInput) afterOtpInput.style.display = "none";*/
+      if (afterOtpInput) afterOtpInput.style.display = "none";
 
       nextBtn.textContent = "Next";
       nextBtn.style.display = "block";
       nextBtn.onclick = handleNextClick;
     });
 
+  // ✅ Optional: Clear fields when OPD modal closes
+  document
+    .getElementById("opdModal")
+    .addEventListener("hidden.bs.modal", () => {
+      const notes = document.getElementById("notesInput");
+      const prescription = document.getElementById("prescriptionInput");
+      notes.value = "";
+      prescription.value = "";
+      document.getElementById("followupDate").value = "";
+      document.getElementById("followupTime").value = "";
+    });
+
   // Open Modal and set mobile
   document
     .getElementById("viewRecordsBtn")
     .addEventListener("click", function () {
-      const dropdown = document.getElementById("toFilter");
+      const dropdown = document.getElementById("patientSelect");
       const selectedPatient = dropdown.value;
 
       if (!selectedPatient) {
@@ -1052,7 +1344,7 @@
   document
     .getElementById("allrecordModal")
     .addEventListener("show.bs.modal", function () {
-      const dropdown = document.getElementById("toFilter");
+      const dropdown = document.getElementById("patientSelect");
       const selectedValue = dropdown.value;
 
       const mobileOnly = selectedValue.split("@")[0];
@@ -1061,20 +1353,23 @@
       mobileInput.value = mobileOnly;
       mobileInput.setAttribute("readonly", true);
 
-      // Reset OTP input
-      const otpInput = document.getElementById("OTPInput");
-      otpInput.style.display = "none";
+      // Reset OTP input (new floating structure)
+      const otpWrapper = document.getElementById("viewAllOtpWrapper");
+      const otpInput = document.getElementById("viewAllOtpInput");
+
+      otpWrapper.style.display = "none";
       otpInput.value = "";
 
       const nextBtn = document.getElementById("nextBtn");
       nextBtn.textContent = "Next";
-      nextBtn.onclick = showOtpInput;
+      nextBtn.onclick = viewRecordOtpInput;
     });
 
   // Show OTP Field & call backend
-  function showOtpInput() {
+  function viewRecordOtpInput() {
     const mobileInput = document.getElementById("phoneInput");
-    const otpInput = document.getElementById("OTPInput");
+    const otpInput = document.getElementById("viewAllOtpInput");
+    const otpWrapper = document.getElementById("viewAllOtpWrapper");
     const nextBtn = document.getElementById("nextBtn");
 
     const mobileNumber = mobileInput.value.trim();
@@ -1091,7 +1386,7 @@
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          otpInput.style.display = "block";
+          otpWrapper.style.display = "block"; // ✅ Corrected this line
           mobileInput.setAttribute("readonly", true);
           nextBtn.textContent = "Submit";
           nextBtn.onclick = submitOtp;
@@ -1107,7 +1402,7 @@
 
   // Submit OTP
   function submitOtp() {
-    const otp = document.getElementById("OTPInput").value.trim();
+    const otp = document.getElementById("viewAllOtpInput").value.trim();
     const mobile = document.getElementById("phoneInput").value.trim();
 
     if (!otp) {
@@ -1125,15 +1420,33 @@
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ mobile, otp }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok)
+          throw new Error("OTP verification failed with server error");
+        return res.json();
+      })
       .then((data) => {
+        console.log("✅ OTP verification response:", data);
+
         if (data.success) {
-          const successModal = new bootstrap.Modal(
-            document.getElementById("otpSuccessModal")
-          );
-          document.getElementById("otpSuccessText").textContent =
-            "✅ OTP verified successfully!";
-          successModal.show();
+          console.log("✅ OTP verified, proceeding to update access...");
+          const doctorId = loggedInEmail;
+          const patientId = mobile + "@reportsofme.com";
+
+          fetch("/update-access", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ doctorId, patientId }),
+          })
+            .then((res) => res.json())
+            .then((accessData) => {
+              console.log("✅ Access update response:", accessData);
+              closeAllRecordModal(); // Hide modal & reload with patient selection
+            })
+            .catch((err) => {
+              console.error("❌ Access update failed:", err);
+              alert("⚠️ Access update failed. Please try again later.");
+            });
         } else {
           const errorModal = new bootstrap.Modal(
             document.getElementById("otpErrorModal")
@@ -1141,34 +1454,44 @@
           document.getElementById("otpErrorText").textContent =
             "❌ " + (data.error || "Invalid OTP");
           errorModal.show();
+          keepOtpVisibleAfterError?.(); // Optional chaining if function exists
         }
       })
       .catch((err) => {
+        console.error("❌ OTP verification failed:", err);
         const errorModal = new bootstrap.Modal(
           document.getElementById("otpErrorModal")
         );
         document.getElementById("otpErrorText").textContent =
           "⚠️ Something went wrong. Try again.";
         errorModal.show();
+        keepOtpVisibleAfterError?.(); // Optional chaining
       });
   }
 
   // Keep OTP field visible after error
   function keepOtpVisibleAfterError() {
-    const otpInput = document.getElementById("OTPInput");
-    otpInput.style.display = "block";
-    otpInput.value = ""; // Clear the input value
-  }
+    const otpWrapper = document.getElementById("viewAllOtpWrapper");
+    const otpInput = document.getElementById("viewAllOtpInput");
 
-  // Close allrecordModal after success
+    otpWrapper.style.display = "block"; // Show the floating input wrapper
+    otpInput.value = ""; // Clear any existing OTP input
+  }
   function closeAllRecordModal() {
     const modal = bootstrap.Modal.getInstance(
       document.getElementById("allrecordModal")
     );
     if (modal) modal.hide();
-    location.reload();
+  
+    // UI updates — refresh view
+    document.getElementById("showingAllRecordsText").style.display = "block";
+    document.getElementById("viewRecordsBtn").style.display = "none";
+  
+    // Refresh prescription/email table logic without reload
+    if (typeof filterPrescriptionTable === "function") {
+      filterPrescriptionTable(); // Calls your data reload logic
+    }
   }
-
   function handleBackClick() {
     fetch("/dashboard", {
       method: "GET",
@@ -1193,6 +1516,7 @@
 
   var loggedInEmail = "{{.Email}}";
   console.log("👤 Logged-in email:", loggedInEmail);
+
   // If session expired (Email not present), block all interaction and redirect
   if (!loggedInEmail || loggedInEmail.trim() === "") {
     console.warn(
@@ -1257,10 +1581,10 @@
     let today = new Date().toISOString().split("T")[0];
     document.getElementById("followupDate").setAttribute("min", today);
   });
-  // PDF Generation call on button click
+
   // Function to call PDF generation
   function generatePDF() {
-    const dropdown = document.getElementById("toFilter");
+    const dropdown = document.getElementById("patientSelect");
     const selectedValue = dropdown.value;
 
     if (!selectedValue) {
@@ -1292,10 +1616,6 @@
       });
   }
 
-  // Show a loading message while fetching
-
-  // Show an error message
-
   function logout() {
     fetch("/logout", { method: "GET" })
       .then((response) => {
@@ -1304,179 +1624,6 @@
         }
       })
       .catch((error) => console.error("Logout failed:", error));
-  }
-
-  document.addEventListener("DOMContentLoaded", function () {
-    const dropdown = document.getElementById("toFilter");
-    const modalTitle = document.getElementById("opdModalLabel");
-
-    // Fetch email recipients
-    fetch("/get-recipients")
-      .then((response) => {
-        if (!response.ok) {
-          // If the response has a status code indicating an error, throw an error
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        // Initialize the dropdown with a default option
-        dropdown.innerHTML = '<option value="">Select Patient</option>';
-
-        // Use a Set to store unique email addresses
-        const uniqueEmails = new Set();
-
-        data.forEach((email) => {
-          // Check if the email is valid and contains the '@' symbol
-          if (email && email.includes("@")) {
-            // Trim any leading or trailing whitespace from the email
-            const fullEmail = email.trim();
-
-            // Add the email to the Set if it's not already present
-            if (!uniqueEmails.has(fullEmail)) {
-              uniqueEmails.add(fullEmail);
-
-              // Create a new option element for the dropdown
-              const option = document.createElement("option");
-              option.value = fullEmail; // Set the option's value to the full email
-              option.textContent = fullEmail; // Display the full email in the dropdown
-
-              // Append the option to the dropdown
-              dropdown.appendChild(option);
-            }
-          }
-        });
-      })
-      .catch((error) => {
-        console.error("Error fetching recipients:", error);
-      });
-
-    // ✅ OPD button click handler
-    document.querySelectorAll('a[rev="opd-link"]').forEach(function (opdBtn) {
-      opdBtn.addEventListener("click", function () {
-        const selectedPatient = dropdown.value;
-        if (!selectedPatient) {
-          // Set modal message text
-          document.getElementById("opdMessageText").textContent =
-            "Please Select Patient to proceed further.";
-
-          // Show message modal
-          const messageModal = new bootstrap.Modal(
-            document.getElementById("opdMessageModal")
-          );
-          messageModal.show();
-          return;
-        }
-
-        // Open OPD modal if patient selected
-        const opdModal = new bootstrap.Modal(
-          document.getElementById("opdModal")
-        );
-        opdModal.show();
-      });
-    });
-  });
-
-  document.getElementById("toFilter").addEventListener("change", function () {
-    const selectedEmail = this.value;
-    if (selectedEmail) {
-      filterEmails();
-    } else {
-      document.getElementById("emailTableBody").innerHTML =
-        '<tr><td colspan="4"><center>No Record Found</center></td></tr>';
-    }
-  });
-
-  function filterEmails() {
-    const selectedTo = document.getElementById("toFilter").value;
-    const tableBody = document.getElementById("emailTableBody");
-
-    if (!selectedTo) {
-      tableBody.innerHTML = `
-      <tr>
-        <td colspan="4" style="text-align:center; color: gray;">No Record Found</td>
-      </tr>`;
-      return;
-    }
-
-    showSpinner();
-
-    const params = new URLSearchParams({ to: selectedTo });
-
-    fetch(`/emails?${params.toString()}`, {
-      headers: { "X-Requested-With": "XMLHttpRequest" },
-    })
-      .then((response) => {
-        if (response.redirected) {
-          alert("Session expired. Redirecting to login.");
-          window.location.href = "/login";
-          return Promise.reject("Redirected due to expired session.");
-        }
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        return response.json();
-      })
-      .then((data) => {
-        console.log("✅ API Response:", data);
-
-        const emails = data.emails || [];
-        const filteredEmails = emails.filter(
-          (email) => email.from === loggedInEmail
-        );
-
-        let html = "";
-
-        if (!emails.length || !filteredEmails.length) {
-          html = `<tr class="no-records-row">
-                  <td colspan="4">No records to display.</td>
-                </tr>`;
-        } else {
-          html = filteredEmails
-            .map((email) => {
-              const fromName = email.from_name || "Unknown";
-              const subject = email.subject || "(No Subject)";
-              const date = email.date || "No Date";
-              const attachments =
-                (email.attachment_names || [])
-                  .map(
-                    (name) =>
-                      `<a href="javascript:void(0);" onclick="renderAttachments(${email.uid}, '${name}')"
-                style="color: red; text-decoration: none;">${name}</a>`
-                  )
-                  .join(", ") || "No Attachments";
-
-              return `
-            <tr>
-              <td>${fromName}</td>
-              <td>
-                <a href="javascript:void(0);" onclick="fetchAndShowEmailBody('${email.uid}')"
-                   style="color: red; text-decoration: none;">${subject}</a>
-              </td>
-              <td>${date}</td>
-              <td>${attachments}</td>
-            </tr>`;
-            })
-            .join("");
-        }
-
-        tableBody.innerHTML = html;
-        hideSpinner();
-      })
-      .catch((err) => {
-        console.error("❌ Fetch error:", err);
-        if (err === "Redirected due to expired session.") return;
-
-        tableBody.innerHTML = `
-        <tr>
-          <td colspan="4" style="color: red; text-align: center;">
-            Error loading emails.
-          </td>
-        </tr>`;
-        hideSpinner();
-      });
   }
 
   function fetchAndShowEmailBody(uid) {
@@ -1547,6 +1694,7 @@
   function closeEmailModal() {
     document.getElementById("emailModal").style.display = "none";
   }
+
   function renderAttachments(uid, attachmentName) {
     if (!uid || !attachmentName) {
       alert("Invalid email ID or attachment name.");
@@ -1709,36 +1857,13 @@
 
     var modal = new bootstrap.Modal(document.getElementById("emailModal"));
     modal.show();
-  } // Function to decode HTML entities
+  }
+
+  // Function to decode HTML entities
   function decodeHtml(html) {
     var txt = document.createElement("textarea");
     txt.innerHTML = html;
     return txt.value;
-  }
-  function hasAccessToAllRecords(toEmail, fromEmail, callback) {
-    console.log(fromEmail);
-    $.get(
-      `/api/check-email?from=${fromEmail}&to=${toEmail}`,
-      function (response) {
-        var statusDiv = document.getElementById("email-status");
-        if (response.message.includes("exists")) {
-          statusDiv.innerText = "✅ Email exists in the database";
-          statusDiv.classList.add("exists");
-          statusDiv.classList.remove("not-found");
-          callback(true);
-        } else {
-          statusDiv.innerText = "⚠️ Email not found in database";
-          statusDiv.classList.add("not-found");
-          statusDiv.classList.remove("exists");
-          callback(false);
-        }
-      }
-    ).fail(function () {
-      console.error("Error calling API");
-      document.getElementById("email-status").innerText =
-        "❌ Error checking database";
-      callback(false);
-    });
   }
 
   function showPopup(body) {
@@ -1746,13 +1871,15 @@
     var emailModal = new bootstrap.Modal(document.getElementById("emailModal"));
     emailModal.show();
   }
+
   function closePopup() {
     document.getElementById("popup").style.display = "none";
     document.getElementById("overlay").style.display = "none";
   }
   let fromName = "{{.FromName}}"; // Injected from controller
+
   function saveOPDDetails() {
-    let mobileNumber = document.getElementById("toFilter").value;
+    let mobileNumber = document.getElementById("patientSelect").value;
     let opdNotes = document.querySelector("#notes textarea").value.trim();
     let prescription = document
       .querySelector("#prescription textarea")
@@ -1773,11 +1900,9 @@
       })
       .replace(",", "");
 
-    // Reset validation styles
     followupDateEl.classList.remove("is-invalid");
     followupTimeEl.classList.remove("is-invalid");
 
-    // Validate required fields
     let isValid = true;
     if (!followupDate) {
       followupDateEl.classList.add("is-invalid");
@@ -1788,7 +1913,6 @@
       isValid = false;
     }
 
-    // 🔴 IMPORTANT: Stop if validation fails — do not send request!
     if (!isValid) {
       alert(
         "⚠️ Please fill Follow-up Date and Follow-up Time before generating PDF."
@@ -1796,7 +1920,9 @@
       return;
     }
 
-    // Proceed with fetch if all fields are valid
+    // ✅ Show spinner before sending request
+    showSpinner();
+
     fetch("/generate-pdf", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1812,6 +1938,9 @@
     })
       .then((response) => response.json())
       .then((data) => {
+        // ✅ Hide spinner before showing alert
+        hideSpinner();
+
         if (data.error) {
           console.log("PDF not generated:", data.error);
           alert("❌ Error: " + data.error);
@@ -1820,9 +1949,7 @@
 
         if (data.message) {
           alert("✅ PDF generated and sent to Patient email");
-
-          // ✅ Call filterEmails() only after a successful PDF generation
-          filterEmails();
+          filterPrescriptionTable();
 
           let opdModal = document.getElementById("opdModal");
           let modalInstance = bootstrap.Modal.getInstance(opdModal);
@@ -1836,7 +1963,11 @@
           alert("❌ Error: " + data.error);
         }
       })
-      .catch((error) => console.error("❌ Error generating PDF:", error));
+      .catch((error) => {
+        hideSpinner(); // ✅ Ensure spinner is hidden on error too
+        console.error("❌ Error generating PDF:", error);
+        alert("❌ Something went wrong while generating the PDF.");
+      });
   }
 
   function updateTable(entry) {
@@ -1906,9 +2037,16 @@
         activeIndex === tabPanes.length - 1 ? "inline-block" : "none"; // Fix SAVE button issue
     }
 
-    function showWarningModal(message) {
-      document.getElementById("warningMessage").innerHTML = " " + message;
-      new bootstrap.Modal(document.getElementById("warningModal")).show();
+    function showWarning(message) {
+      const alertBox = document.getElementById("warningAlert");
+      const warningMessage = document.getElementById("warningMessage");
+
+      warningMessage.textContent = message;
+      alertBox.classList.remove("d-none");
+
+      setTimeout(() => {
+        alertBox.classList.add("d-none");
+      }, 2000); // hide after 3 seconds
     }
 
     function validateCurrentTab() {
@@ -1918,7 +2056,7 @@
       if (activeTab.id === "notes") {
         let opdNotes = document.querySelector("#notes textarea").value.trim();
         if (opdNotes === "") {
-          showWarningModal("OPD Notes cannot be empty.");
+          showWarning("OPD Notes cannot be empty.");
           isValid = false;
         }
       } else if (activeTab.id === "prescription") {
@@ -1926,7 +2064,7 @@
           .querySelector("#prescription textarea")
           .value.trim();
         if (prescription === "") {
-          showWarningModal("Prescription cannot be empty.");
+          showWarning("Prescription cannot be empty.");
           isValid = false;
         }
       } else if (activeTab.id === "followup") {
@@ -1937,10 +2075,11 @@
           "#followup input[type='time']"
         ).value;
         if (followupDate === "" || followupTime === "") {
-          showWarningModal("Please select both Follow-up Date and Time.");
+          showWarning("Please select both Follow-up Date and Time.");
           isValid = false;
         }
       }
+
       return isValid;
     }
 
@@ -1970,6 +2109,7 @@
 
     updateButtons();
   });
+
   function showSpinner() {
     document.getElementById("spinner-overlay").classList.remove("hidden");
   }
