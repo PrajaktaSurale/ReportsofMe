@@ -51,3 +51,26 @@ type OpdModel struct {
 	CreatedOn    string
 	GeneratedOn  string
 }
+type Recipient struct {
+	Email        string
+	MobileNumber string
+}
+type EmailInfo struct {
+	Date  time.Time
+	Email string
+}
+
+type PatientDataModel struct {
+	PatientName string `json:"patientName" bson:"Name"` // Match 'Name' field in MongoDB document
+	Email       string `json:"email" bson:"Email"`
+	Mobile      string `json:"mobile" bson:"Mobile"`
+	DOB         string `json:"dob" bson:"DOB"`
+	Gender      string `json:"gender" bson:"Gender"`
+	DoctorID    string `json:"doctorId" bson:"DoctorID"`
+	DoctorName  string `json:"doctorName" bson:"DoctorName"`
+}
+
+type RecipientInfo struct {
+	EmailId string `json:"emailId"`
+	Name    string `json:"name"` // Can be PatientName or fallback mobile
+}
