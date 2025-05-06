@@ -10,7 +10,6 @@ import (
 	"email-client/config"
 	"email-client/models"
 
-	"github.com/emersion/go-imap"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -92,44 +91,4 @@ func GetPatientByMobile(mobile string) (*models.PatientDataModel, error) {
 
 	// Return the patient data
 	return &patient, nil
-}
-// CheckEmailExists checks if an email exists with doctorId as "From" and patientId as "To"
-func CheckEmailExists(doctorId, patientId string) (bool, error) {
-	start := time.Now()
-	log.Println("📨 Checking emails From:", doctorId, "| To:", patientId)
-
-	imapClient, err := config.ConnectIMAP()
-	if err != nil {
-		log.Println("❌ IMAP connection error:", err)
-		return false, err
-	}
-	defer imapClient.Logout()
-
-	_, err = imapClient.Select("INBOX", false)
-	if err != nil {
-		log.Println("❌ Failed to select INBOX:", err)
-		return false, err
-	}
-
-	// Use IMAP header filtering
-	criteria := imap.NewSearchCriteria()
-	criteria.Header.Add("From", doctorId)
-	criteria.Header.Add("To", patientId)
-
-	uids, err := imapClient.Search(criteria)
-	if err != nil {
-		log.Println("❌ IMAP search failed:", err)
-		return false, err
-	}
-	log.Printf("🔍 Matched UIDs: %d", len(uids))
-
-	if len(uids) > 0 {
-		log.Printf("✅ Matching email found (From: %s → To: %s)", doctorId, patientId)
-		log.Printf("⏱️ Check completed in %v ms", time.Since(start).Milliseconds())
-		return true, nil
-	}
-
-	log.Printf("❌ No matching email found for From = %s and To = %s", doctorId, patientId)
-	log.Printf("⏱️ Check completed in %v ms", time.Since(start).Milliseconds())
-	return false, nil
 }

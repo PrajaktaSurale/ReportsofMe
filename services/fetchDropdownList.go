@@ -4,6 +4,7 @@ import (
 	"email-client/config"
 	"fmt"
 	"log"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -34,6 +35,7 @@ func ExtractMobileNumber(email string) (string, error) {
 }
 
 // FetchEmailIDs retrieves unique recipient emails sorted by latest date first
+// FetchEmailIDs retrieves unique recipient emails in the format 10-digit@domain.com, sorted by latest date first
 func FetchEmailIDs(loggedInEmail string) ([]string, error) {
 	imapClient, err := config.ConnectIMAP()
 	if err != nil {
@@ -46,7 +48,6 @@ func FetchEmailIDs(loggedInEmail string) ([]string, error) {
 		return nil, fmt.Errorf("failed to select INBOX: %w", err)
 	}
 
-	// Search for emails sent by logged-in user
 	searchCriteria := imap.NewSearchCriteria()
 	searchCriteria.Header.Add("FROM", loggedInEmail)
 
@@ -70,7 +71,9 @@ func FetchEmailIDs(loggedInEmail string) ([]string, error) {
 	var emailList []EmailInfo
 	uniqueRecipients := make(map[string]bool)
 
-	// Process fetched emails
+	// Regular expression for 10-digit email format
+	validFormat := regexp.MustCompile(`^\d{10}@[\w\.-]+$`)
+
 	for msg := range messages {
 		if msg == nil || msg.Envelope == nil || len(msg.Envelope.To) == 0 {
 			continue
@@ -80,21 +83,21 @@ func FetchEmailIDs(loggedInEmail string) ([]string, error) {
 			toEmail := fmt.Sprintf("%s@%s", recipient.MailboxName, recipient.HostName)
 			toEmail = strings.ToLower(strings.TrimSpace(toEmail))
 
-			emailDate := msg.Envelope.Date.UTC() // Convert to UTC
-
-			if toEmail != "" && !uniqueRecipients[toEmail] {
+			if validFormat.MatchString(toEmail) && !uniqueRecipients[toEmail] {
 				uniqueRecipients[toEmail] = true
-				emailList = append(emailList, EmailInfo{Date: emailDate, Email: toEmail})
+				emailList = append(emailList, EmailInfo{
+					Email: toEmail,
+					Date:  msg.Envelope.Date.UTC(),
+				})
 			}
 		}
 	}
 
-	// Sort emails by date (latest first)
+	// Sort by date (latest first)
 	sort.Slice(emailList, func(i, j int) bool {
 		return emailList[i].Date.After(emailList[j].Date)
 	})
 
-	// Convert to final slice
 	var recipients []string
 	for _, email := range emailList {
 		recipients = append(recipients, email.Email)
