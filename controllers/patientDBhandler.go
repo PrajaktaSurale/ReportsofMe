@@ -273,4 +273,3 @@ func UpdateAccess(c *gin.Context) {
 // Handler to fetch patients based on the logged-in email and return a unique list for the dropdown
 
 // GetPatientsByLoggedInEmail fetches the list of patients based on the logged-in user's email
-
