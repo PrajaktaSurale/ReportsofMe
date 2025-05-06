@@ -114,7 +114,7 @@
       <br /><br />
     </div>
   </div>
-  <div id="accessStatus" style="margin-bottom: 10px; font-weight: bold"></div>
+  <!-- <div id="accessStatus" style="margin-bottom: 10px; font-weight: bold"></div> -->
   <br />
   <div
     id="showingAllRecordsText"
@@ -174,7 +174,7 @@
       <tbody id="prescriptionTable">
         <tr class="no-records-row">
           <td colspan="4" style="text-align: center; color: gray">
-            No Record Found
+            
           </td>
         </tr>
       </tbody>
@@ -867,10 +867,10 @@
   function checkAccessAndRefresh() {
     const selectedPatientId = document.getElementById("patientSelect").value;
     const doctorId = loggedInEmail;
-    const statusMessage = document.getElementById("accessStatus");
+    //const statusMessage = document.getElementById("accessStatus");
 
     if (!selectedPatientId) {
-      statusMessage.innerText = "";
+      //statusMessage.innerText = "";
       document.getElementById("prescriptionTable").innerHTML = `
         <tr><td colspan="4" style="text-align:center; color: gray;">No Record Found</td></tr>`;
       return;
@@ -888,13 +888,13 @@
         const viewBtn = document.getElementById("viewRecordsBtn");
 
         if (access === "Y") {
-          statusMessage.innerHTML = `<span style="color: green;">✅ Data Access Granted</span>`;
+         // statusMessage.innerHTML = `<span style="color: green;">✅ Data Access Granted</span>`;
           showingText.style.display = "block";
           viewBtn.style.display = "none";
         } else {
           const msg =
             access === "N" ? "❌ Access Not Granted" : "❌ No Record Found";
-          statusMessage.innerHTML = `<span style="color: red;">${msg}</span>`;
+         // statusMessage.innerHTML = `<span style="color: red;">${msg}</span>`;
           showingText.style.display = "none";
           viewBtn.style.display = "block";
         }
@@ -903,7 +903,7 @@
       })
       .catch((err) => {
         console.error("❌ Error checking access:", err);
-        statusMessage.innerHTML = `<span style="color: red;">❌ Error checking access</span>`;
+       // statusMessage.innerHTML = `<span style="color: red;">❌ Error checking access</span>`;
         filterPrescriptionTable();
       });
   }
